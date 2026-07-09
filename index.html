@@ -2489,8 +2489,7 @@
       if (subEl) subEl.innerText = `🏆 經過 ${selectedBracketSize} 強殘酷二選一，這是你靈魂深處最重要的陳綺貞經典神曲！`;
 
       const container = document.getElementById('champion-media-container');
-      if (!container) return;
-      container.innerHTML = '';
+      if (container) container.innerHTML = '';
 
       const vid = extractVideoId(winnerSong);
       const currentOrigin = window.location.protocol.startsWith('http') ? window.location.origin : undefined;
@@ -2506,6 +2505,33 @@
           origin: currentOrigin
         }
       });
+
+      const historyContainer = document.getElementById('history-list');
+      if (historyContainer) {
+        historyContainer.innerHTML = '';
+        const listToRender = (matchHistory && matchHistory.length > 0) ? matchHistory : battleHistory;
+        if (!listToRender || listToRender.length === 0) {
+          historyContainer.innerHTML = '<div style="color: var(--text-muted); padding: 1rem; text-align: center;">尚無對決紀錄</div>';
+        } else {
+          listToRender.forEach((item, idx) => {
+            const row = document.createElement('div');
+            row.className = 'history-item';
+            row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 0.8rem 1.1rem; border-radius: 12px; margin-bottom: 0.65rem; flex-wrap: wrap; gap: 0.6rem; border: 1px solid rgba(255,255,255,0.08);';
+            const winTitle = item.winner ? item.winner.title : (item.winSong ? item.winSong.title : '未知歌曲');
+            const loseTitle = item.loser ? item.loser.title : (item.loseSong ? item.loseSong.title : '未知歌曲');
+            row.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="background: var(--primary); color: #fff; font-size: 0.78rem; font-weight: 800; padding: 0.22rem 0.65rem; border-radius: 6px;">第 ${idx + 1} 場 (${item.round || '海選'})</span>
+                <b style="color: #34d399; font-size: 1.02rem;">👑 ${winTitle}</b>
+              </div>
+              <div style="color: #f87171; font-size: 0.92rem; display: flex; align-items: center; gap: 0.4rem; font-weight: 600;">
+                <i class="fa-solid fa-xmark"></i> 淘汰: ${loseTitle}
+              </div>
+            `;
+            historyContainer.appendChild(row);
+          });
+        }
+      }
     }
 
     function startTimer() {
@@ -2536,13 +2562,15 @@
 
     function shareResult() {
       const champTitle = document.getElementById('champion-title-text').innerText;
-      const text = `🏆 我在【陳綺貞經典歌曲對決 | 殘酷二選一】經過一輪輪掙扎對決，我的唯一靈魂神曲是：${champTitle}！你也來挑選心目中的第一名吧！`;
+      const text = `🏆 我在【陳綺貞經典歌曲對決 | 殘酷二選一】經過一輪輪掙扎對決，我的唯一靈魂神曲是：${champTitle}！你也來挑選心目中的第一名吧！\nhttps://max817781.github.io/CheerChenGame2pick/`;
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
-          alert("✅ 戰果已成功複製到剪貼簿！");
+          alert("✅ 戰果已成功複製到剪貼簿！可以立刻貼上至社群平台分享：\n\n" + text);
+        }).catch(() => {
+          prompt("請複製以下戰果內容分享：", text);
         });
       } else {
-        alert(text);
+        prompt("請複製以下戰果內容分享：", text);
       }
     }
   </script>
