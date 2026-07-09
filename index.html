@@ -2130,6 +2130,7 @@
         return;
       }
       const saveObj = {
+        version: "v2.5_demo3_search",
         selectedBracketSize: selectedBracketSize || 64,
         currentPool: currentPool || [],
         nextRoundPool: nextRoundPool || [],
@@ -2154,6 +2155,13 @@
       
       try {
         const saveObj = JSON.parse(existingSave);
+        if (saveObj.version !== "v2.5_demo3_search") {
+          alert("⚠️ 偵測到遊戲曲庫有重大更新（加入了《Demo 3》經典與全新搜尋系統），為了維持最佳與最新的對決體驗，舊版存檔已自動重置，將為你開啟全新對決！");
+          localStorage.removeItem('CHEER_2PICK_SAVE');
+          startGame(true);
+          return;
+        }
+
         selectedBracketSize = saveObj.selectedBracketSize || 64;
         currentPool = saveObj.currentPool || [];
         nextRoundPool = saveObj.nextRoundPool || [];
@@ -2226,6 +2234,13 @@
       if (existingSave && existingSave !== 'null' && existingSave !== '') {
         try {
           const saveObj = JSON.parse(existingSave);
+          if (saveObj.version !== "v2.5_demo3_search") {
+            localStorage.removeItem('CHEER_2PICK_SAVE');
+            container.style.display = 'none';
+            container.classList.add('hidden');
+            return;
+          }
+
           const roundBadge = document.getElementById('resume-round-badge');
           const infoText = document.getElementById('resume-info-text');
           if (roundBadge) roundBadge.innerText = saveObj.currentRoundName || "未完對決";
