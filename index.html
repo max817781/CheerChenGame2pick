@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>陳綺貞 Cheer Chen 經典歌曲對決 | 殘酷二選一 (2pick 100% 擬真架構)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --bg-card: rgba(22, 25, 38, 0.75);
+      --bg-glass: rgba(255, 255, 255, 0.04);
+      --border-glass: rgba(255, 255, 255, 0.12);
+      --primary: #f43f5e;
+      --primary-glow: rgba(244, 63, 94, 0.45);
+      --secondary: #6366f1;
+      --secondary-glow: rgba(99, 102, 241, 0.45);
+      --accent: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --left-color: #ec4899;
+      --right-color: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(244, 63, 94, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 45%);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 頂部導航列 */
+    header {
+      background: rgba(10, 11, 16, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #fb7185, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo i {
+      font-size: 1.5rem;
+      color: var(--primary);
+      -webkit-text-fill-color: var(--primary);
+    }
+
+    .nav-stats {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .stat-badge {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-badge i {
+      color: var(--accent);
+    }
+
+    /* 主內容容器 */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .screen {
+      width: 100%;
+      display: none;
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================
+       1. 歡迎與設定畫面 (#intro-screen)
+       ========================================== */
+    .intro-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 860px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .intro-title {
+      font-size: 2.3rem;
+      font-weight: 900;
+      margin-bottom: 0.8rem;
+      line-height: 1.25;
+      background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .intro-subtitle {
+      color: #34d399;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      margin-bottom: 1.2rem;
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 9999px;
+    }
+
+    .intro-desc {
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      font-size: 0.98rem;
+    }
+
+    /* 播放模式切換鈕 */
+    .mode-selector {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+
+    .mode-selector h4 {
+      color: #fff;
+      font-size: 1.05rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mode-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .mode-btn {
+      background: var(--bg-glass);
+      border: 1.5px solid var(--border-glass);
+      border-radius: 12px;
+      padding: 1rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .mode-btn.active {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    }
+
+    .mode-btn b {
+      color: #fff;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .mode-btn.active b {
+      color: #38bdf8;
+    }
+
+    .mode-btn small {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .bracket-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .bracket-btn {
+      background: var(--bg-glass);
+      border: 1.5px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.25rem 1rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .bracket-btn i {
+      font-size: 1.6rem;
+      color: var(--text-muted);
+    }
+
+    .bracket-btn.selected {
+      border-color: var(--primary);
+      background: rgba(244, 63, 94, 0.15);
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .bracket-btn.selected i {
+      color: var(--primary);
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, var(--primary), #e11d48);
+      color: #fff;
+      border: none;
+      padding: 1.2rem 3.5rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 25px -5px var(--primary-glow);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 15px 35px -5px var(--primary-glow);
+    }
+
+    /* ==========================================
+       2. 對決主畫面 (#battle-screen)
+       ========================================== */
+    .round-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      background: var(--bg-card);
+      padding: 1rem 2rem;
+      border-radius: 16px;
+      border: 1px solid var(--border-glass);
+    }
+
+    .round-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .round-title span {
+      color: var(--accent);
+    }
+
+    .progress-bar-container {
+      flex: 1;
+      max-width: 300px;
+      margin: 0 2rem;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .versus-arena {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr;
+      gap: 1.5rem;
+      width: 100%;
+      align-items: stretch;
+      min-height: 520px;
+    }
+
+    .vs-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 2rem;
+      font-style: italic;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255,255,255,0.5);
+      position: relative;
+    }
+
+    .vs-badge::before, .vs-badge::after {
+      content: '';
+      width: 2px;
+      flex: 1;
+      background: linear-gradient(to bottom, transparent, var(--border-glass), transparent);
+      margin: 1rem 0;
+    }
+
+    .battle-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-glass);
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+
+    .battle-card.left-card:hover {
+      border-color: var(--left-color);
+      box-shadow: 0 0 35px rgba(236, 72, 153, 0.35);
+      transform: translateY(-4px);
+    }
+
+    .battle-card.right-card:hover {
+      border-color: var(--right-color);
+      box-shadow: 0 0 35px rgba(59, 130, 246, 0.35);
+      transform: translateY(-4px);
+    }
+
+    .battle-card.active-focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+    }
+
+    /* 媒體容器區：一開始只呈現縮圖卡片，Hover/啟動時動態建立 IFrame */
+    .media-box {
+      width: 100%;
+      height: 320px;
+      position: relative;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .yt-container, .html5-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: none;
+    }
+
+    .yt-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .thumb-preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      z-index: 5;
+    }
+
+    .battle-card:hover .thumb-preview {
+      transform: scale(1.05);
+    }
+
+    /* 錯誤或降級面板 */
+    .overlay-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, rgba(10, 11, 16, 0.96) 15%, rgba(10, 11, 16, 0.55) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .overlay-panel.hidden {
+      display: none;
+    }
+
+    .overlay-panel i.icon-status {
+      font-size: 2.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .overlay-panel h5 {
+      font-size: 1.15rem;
+      color: #fff;
+      margin-bottom: 0.4rem;
+      font-weight: 800;
+    }
+
+    .overlay-panel p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+      max-width: 88%;
+    }
+
+    .ext-listen-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      text-decoration: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .ext-listen-btn:hover {
+      background: #ff0000;
+      border-color: #ff0000;
+      transform: scale(1.05);
+    }
+
+    /* 狀態指示丸 */
+    .status-pill {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 0.35rem 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      z-index: 15;
+    }
+
+    .status-pill.playing {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    .song-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .song-album {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: -0.75rem;
+    }
+
+    .vote-btn {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      color: #fff;
+    }
+
+    .left-card .vote-btn {
+      background: linear-gradient(135deg, var(--left-color), #be185d);
+      box-shadow: 0 8px 20px -4px rgba(236, 72, 153, 0.4);
+    }
+
+    .right-card .vote-btn {
+      background: linear-gradient(135deg, var(--right-color), #1d4ed8);
+      box-shadow: 0 8px 20px -4px rgba(59, 130, 246, 0.4);
+    }
+
+    .vote-btn:hover {
+      transform: scale(1.03);
+      filter: brightness(1.1);
+    }
+
+    .winner-stamp {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(16, 185, 129, 0.95);
+      color: #fff;
+      font-size: 2.2rem;
+      font-weight: 900;
+      padding: 0.8rem 2rem;
+      border-radius: 16px;
+      border: 3px solid #fff;
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.8);
+      z-index: 30;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .winner-stamp.show {
+      transform: translate(-50%, -50%) scale(1) rotate(-8deg);
+    }
+
+    /* ==========================================
+       3. 冠軍結果畫面 (#result-screen)
+       ========================================== */
+    .result-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 28px;
+      padding: 3rem;
+      max-width: 840px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+    }
+
+    .trophy-icon {
+      font-size: 4.5rem;
+      color: #fbbf24;
+      margin-bottom: 1rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-15px); }
+      60% { transform: translateY(-7px); }
+    }
+
+    .champion-title {
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .champion-sub {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .champion-media {
+      width: 100%;
+      max-width: 560px;
+      height: 315px;
+      margin: 0 auto 2rem;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid var(--accent);
+      background: #000;
+      position: relative;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      color: #fff;
+      padding: 0.9rem 2rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .history-section {
+      text-align: left;
+      border-top: 1px solid var(--border-glass);
+      padding-top: 2rem;
+    }
+
+    .history-section h4 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      color: #fff;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .history-item {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-glass);
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+
+    .history-winner {
+      font-weight: 800;
+      color: #34d399;
+    }
+
+    .history-loser {
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    @media (max-width: 900px) {
+      .versus-arena { grid-template-columns: 1fr; gap: 1.5rem; }
+      .vs-badge { flex-direction: row; padding: 0.5rem 0; font-size: 1.5rem; }
+      .vs-badge::before, .vs-badge::after { width: 100%; height: 1px; margin: 0 1rem; }
+      .mode-options { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 導航 Header -->
+  <header>
+    <div class="logo">
+      <i class="fa-solid fa-fire-flame-curved"></i>
+      <span>陳綺貞經典歌曲對決 | 2pick 擬真架構版</span>
+    </div>
+    <div class="nav-stats">
+      <div class="stat-badge" id="badge-timer" title="當前思考時間">
+        <i class="fa-regular fa-clock"></i>
+        <span id="timer-text">00:00</span>
+      </div>
+      <div class="stat-badge" id="badge-mode-display">
+        <i class="fa-brands fa-youtube"></i>
+        <span id="mode-text">2pick IFrame 延遲載入模式</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要內容區 -->
+  <main>
+    <!-- 1. 設定與開始畫面 -->
+    <section id="intro-screen" class="screen active">
+      <div class="intro-box">
+        <div class="intro-subtitle"><i class="fa-solid fa-check-double"></i> 2pick.app 黃金參數相容架構</div>
+        <h1 class="intro-title">尋找你心目中<br>唯一的「陳綺貞經典神作」</h1>
+        <p class="intro-desc">
+          🔥 <b>核心突破實作：</b>完全模仿 2pick.app 的<b>「縮圖優先 + Hover/點擊動態載入 IFrame + enablejsapi=1/origin/playlist 黃金參數」</b>！<br>
+          ⚡ 第一首已幫你設定為指定的實測對象 <b>33rdx577PxY</b>，且題庫支援直接貼 YouTube 網址、`iframe` 嵌入碼或本地 MP4！
+        </p>
+
+        <!-- 播放模式切換鈕 -->
+        <div class="mode-selector">
+          <h4><i class="fa-solid fa-sliders" style="color: var(--accent);"></i> 選擇底層音源載入引擎</h4>
+          <div class="mode-options">
+            <div class="mode-btn active" id="btn-mode-yt" onclick="setPlayerMode('youtube')">
+              <b><i class="fa-brands fa-youtube"></i> 2pick IFrame 動態載入引擎</b>
+              <small><b>(模擬 2pick.app 流程)</b> 開始遊戲後才動態建立 YouTube IFrame，帶入 controls/autoplay/rel/origin/playlist 參數，極大化穩定度。</small>
+            </div>
+            <div class="mode-btn" id="btn-mode-local" onclick="setPlayerMode('local')">
+              <b><i class="fa-solid fa-hard-drive" style="color: #6366f1;"></i> 下載/本地 MP4 零限制直連模式</b>
+              <small><b>(若您有下載影片/音檔至本地)</b> 完全跳過 YouTube API，直接由瀏覽器原生 HTML5 Video/Audio 播放，100% 免疫任何版權限制。</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="bracket-options">
+          <div class="bracket-btn selected" onclick="selectBracket(16, this)">
+            <i class="fa-solid fa-trophy"></i>
+            <b>16 強海選</b>
+          </div>
+          <div class="bracket-btn" onclick="selectBracket(8, this)">
+            <i class="fa-solid fa-bolt"></i>
+            <b>8 強快閃</b>
+          </div>
+          <div class="bracket-btn" onclick="selectBracket(4, this)">
+            <i class="fa-solid fa-star"></i>
+            <b>4 強準決賽</b>
+          </div>
+        </div>
+
+        <button class="start-btn" onclick="startGame()">
+          <span>立即展開殘酷對決</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. 對決主畫面 -->
+    <section id="battle-screen" class="screen">
+      <div class="round-header">
+        <div class="round-title">
+          <i class="fa-solid fa-ranking-star"></i>
+          <span id="round-title-text">16強對決</span>
+          <small class="text-muted" style="font-size: 1rem; margin-left: 0.5rem;" id="match-progress-text">(第 1 / 8 場)</small>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <div class="stat-badge" style="background: rgba(244, 63, 94, 0.15); border-color: var(--primary);">
+          <i class="fa-solid fa-headphones"></i>
+          <span>Hover / Tap 音軌無縫切換</span>
+        </div>
+      </div>
+
+      <div class="versus-arena">
+        <!-- 左卡片 -->
+        <div class="battle-card left-card" id="card-left" onmouseenter="focusCard('left')" onclick="focusCard('left')">
+          <div class="status-pill" id="pill-left"><i class="fa-solid fa-volume-high"></i> 試聽中</div>
+          <div class="media-box" id="media-box-left">
+            <!-- 1. 初始高清縮圖 (2pick 流程：先顯示 i.ytimg.com 縮圖) -->
+            <img id="thumb-left" class="thumb-preview" src="" alt="Left Thumbnail">
+            <!-- 2. 動態建立的 YouTube IFrame 容器 -->
+            <div id="player-left-container" class="yt-container"></div>
+            <!-- 3. 本地 MP4/MP3 容器 -->
+            <video id="video-left" class="html5-video hidden" playsinline loop></video>
+
+            <!-- 錯誤/降級提示卡 -->
+            <div id="overlay-left" class="overlay-panel hidden">
+              <i id="overlay-icon-left" class="fa-solid fa-triangle-exclamation icon-status" style="color: var(--accent);"></i>
+              <h5 id="overlay-title-left">版權擁有者設定外部嵌入限制</h5>
+              <p id="overlay-desc-left">為保護著作權，唱片公司禁止在外部框架內播放。請點開下方視窗聽歌，再點選卡片投票：</p>
+              <a id="ext-link-left" href="#" target="_blank" class="ext-listen-btn" onclick="event.stopPropagation()">
+                <i class="fa-brands fa-youtube"></i> 點此開新頁前往 YouTube 聽歌
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div>
+              <h3 class="song-title" id="title-left"></h3>
+              <p class="song-album" id="album-left"></p>
+            </div>
+            <button class="vote-btn" onclick="voteSong('left', event)">
+              <i class="fa-solid fa-thumbs-up"></i>
+              <span>選擇左邊：《<i id="btn-text-left" style="font-style: normal;"></i>》</span>
+            </button>
+          </div>
+          <div class="winner-stamp" id="stamp-left">WINNER</div>
+        </div>
+
+        <!-- 中間 VS -->
+        <div class="vs-badge">VS</div>
+
+        <!-- 右卡片 -->
+        <div class="battle-card right-card" id="card-right" onmouseenter="focusCard('right')" onclick="focusCard('right')">
+          <div class="status-pill" id="pill-right"><i class="fa-solid fa-volume-high"></i> 試聽中</div>
+          <div class="media-box" id="media-box-right">
+            <img id="thumb-right" class="thumb-preview" src="" alt="Right Thumbnail">
+            <div id="player-right-container" class="yt-container"></div>
+            <video id="video-right" class="html5-video hidden" playsinline loop></video>
+
+            <div id="overlay-right" class="overlay-panel hidden">
+              <i id="overlay-icon-right" class="fa-solid fa-triangle-exclamation icon-status" style="color: var(--accent);"></i>
+              <h5 id="overlay-title-right">版權擁有者設定外部嵌入限制</h5>
+              <p id="overlay-desc-right">為保護著作權，唱片公司禁止在外部框架內播放。請點開下方視窗聽歌，再點選卡片投票：</p>
+              <a id="ext-link-right" href="#" target="_blank" class="ext-listen-btn" onclick="event.stopPropagation()">
+                <i class="fa-brands fa-youtube"></i> 點此開新頁前往 YouTube 聽歌
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div>
+              <h3 class="song-title" id="title-right"></h3>
+              <p class="song-album" id="album-right"></p>
+            </div>
+            <button class="vote-btn" onclick="voteSong('right', event)">
+              <i class="fa-solid fa-thumbs-up"></i>
+              <span>選擇右邊：《<i id="btn-text-right" style="font-style: normal;"></i>》</span>
+            </button>
+          </div>
+          <div class="winner-stamp" id="stamp-right">WINNER</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 冠軍結果畫面 (#result-screen) -->
+    <section id="result-screen" class="screen">
+      <div class="result-box">
+        <div class="trophy-icon"><i class="fa-solid fa-crown"></i></div>
+        <h1 class="champion-title" id="champion-title-text">《旅行的意義》</h1>
+        <p class="champion-sub" id="champion-sub-text">🏆 經過殘酷二選一，這是你靈魂深處最重要的陳綺貞名曲</p>
+
+        <div class="champion-media" id="champion-media-container"></div>
+
+        <div class="action-group">
+          <button class="start-btn" onclick="startGame()">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>重新挑戰二選一</span>
+          </button>
+          <button class="btn-secondary" onclick="shareResult()">
+            <i class="fa-solid fa-share-nodes"></i>
+            <span>複製或分享戰果</span>
+          </button>
+        </div>
+
+        <div class="history-section">
+          <h4><i class="fa-solid fa-clipboard-list"></i> 本局對決淘汰晉級戰報</h4>
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* ==========================================================
+       陳綺貞 Cheer Chen 神曲資料庫 (16首)
+       🔥 100% 支援三種題庫來源格式 (同 2pick)：
+       1. videoId: 純 YouTube 影片 ID
+       2. embedHtml: 直接貼入 YouTube 產生的 <iframe src="https://www.youtube.com/embed/xxxxx"></iframe>
+       3. localAudio: 下載的影片/音檔路徑 (例如 ./audio/33rdx577PxY.mp4)
+       
+       ⚡ 第 1 首已置入你指定的實測 ID：33rdx577PxY！
+       ========================================================== */
+    const CHEER_SONGS = [
+      {
+        id: 1,
+        title: "測試實測曲目：33rdx577PxY",
+        album: "《2pick 參數實測指定曲》",
+        videoId: "33rdx577PxY", // 👈 你指定的首支測試影片！
+        // 也可貼 embedHtml: '<iframe src="https://www.youtube.com/embed/33rdx577PxY"></iframe>'
+        localAudio: "./audio/test_33rdx577PxY.mp4",
+        start: 0,
+        end: 60
+      },
+      {
+        id: 2,
+        title: "旅行的意義 (Live)",
+        album: "《時間的歌巡迴影音》",
+        videoId: "48yXn4c6K7I",
+        localAudio: "./audio/travel.mp3",
+        start: 46,
+        end: 80
+      },
+      {
+        id: 3,
+        title: "每天都是一種練習",
+        album: "《太陽巡迴演唱會實況》",
+        videoId: "0h-i8n2rQ-k",
+        localAudio: "./audio/practice.mp3",
+        start: 38,
+        end: 73
+      },
+      {
+        id: 4,
+        title: "還是會寂寞",
+        album: "《還是會寂寞》 2000",
+        videoId: "YwL32qO2C3Q",
+        localAudio: "./audio/lonely.mp3",
+        start: 40,
+        end: 75
+      },
+      {
+        id: 5,
+        title: "太聰明",
+        album: "《Groupies 吉他手》 2002",
+        videoId: "F32oV24T_7g",
+        localAudio: "./audio/smart.mp3",
+        start: 50,
+        end: 85
+      },
+      {
+        id: 6,
+        title: "吉他手 Groupies",
+        album: "《Groupies 吉他手》 2002",
+        videoId: "s5Uu0yB_7Gk",
+        localAudio: "./audio/groupies.mp3",
+        start: 42,
+        end: 77
+      },
+      {
+        id: 7,
+        title: "小步舞曲",
+        album: "《Groupies 吉他手》 2002",
+        videoId: "y2o3jR3R0_k",
+        localAudio: "./audio/minuet.mp3",
+        start: 35,
+        end: 70
+      },
+      {
+        id: 8,
+        title: "告訴我",
+        album: "《還是會寂寞》 2000",
+        videoId: "sO7t8N9c1n8",
+        localAudio: "./audio/tellme.mp3",
+        start: 48,
+        end: 83
+      },
+      {
+        id: 9,
+        title: "偶然與巧合",
+        album: "《偶然與巧合》單曲 2015",
+        videoId: "S3U-J5-W67M",
+        localAudio: "./audio/serendipity.mp3",
+        start: 45,
+        end: 80
+      },
+      {
+        id: 10,
+        title: "華麗的冒險",
+        album: "《華麗的冒險》 2005",
+        videoId: "7M7J09Cq36A",
+        localAudio: "./audio/adventure.mp3",
+        start: 52,
+        end: 87
+      },
+      {
+        id: 11,
+        title: "九份的咖啡店 (Live)",
+        album: "《讓我想一想》單曲時期",
+        videoId: "P4u92a_v7yQ",
+        localAudio: "./audio/jiufen.mp3",
+        start: 30,
+        end: 65
+      },
+      {
+        id: 12,
+        title: "躺在你的衣櫃",
+        album: "《Groupies 吉他手》 2002",
+        videoId: "o0Xq97GZ5S0",
+        localAudio: "./audio/wardrobe.mp3",
+        start: 45,
+        end: 80
+      },
+      {
+        id: 13,
+        title: "魚 The Edge",
+        album: "《太陽》 2009",
+        videoId: "X-8G0-80a5Y",
+        localAudio: "./audio/fish.mp3",
+        start: 55,
+        end: 90
+      },
+      {
+        id: 14,
+        title: "太陽 Immortal",
+        album: "《太陽》 2009",
+        videoId: "xV-8uY5hG6w",
+        localAudio: "./audio/immortal.mp3",
+        start: 60,
+        end: 95
+      },
+      {
+        id: 15,
+        title: "失敗者的飛翔",
+        album: "《太陽》 2009",
+        videoId: "S3U-J5-W67M",
+        localAudio: "./audio/losers.mp3",
+        start: 50,
+        end: 85
+      },
+      {
+        id: 16,
+        title: "讓我想一想",
+        album: "《讓我想一想》 1998",
+        videoId: "YwL32qO2C3Q",
+        localAudio: "./audio/think.mp3",
+        start: 40,
+        end: 75
+      }
+    ];
+
+    /* ==========================================================
+       遊戲與播放器狀態管理
+       ========================================================== */
+    let playerMode = 'youtube'; // 'youtube' | 'local'
+    let selectedBracketSize = 16;
+    let currentPool = [];
+    let nextRoundPool = [];
+    let currentPair = { left: null, right: null };
+    let matchHistory = [];
+    let isVoting = false;
+    let activeAudioSide = 'left';
+
+    let ytPlayers = { left: null, right: null, champion: null };
+    let ytApiReady = false;
+    let matchTimerInterval = null;
+    let secondsElapsed = 0;
+
+    const scriptTag = document.createElement('script');
+    scriptTag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(scriptTag);
+
+    function onYouTubeIframeAPIReady() {
+      ytApiReady = true;
+      console.log("YouTube IFrame API Ready");
+    }
+
+    function setPlayerMode(mode) {
+      playerMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`btn-mode-${mode === 'youtube' ? 'yt' : 'local'}`).classList.add('active');
+      
+      const modeTextEl = document.getElementById('mode-text');
+      if (mode === 'youtube') {
+        modeTextEl.innerText = "2pick IFrame 動態載入模式";
+      } else {
+        modeTextEl.innerText = "下載/本地 MP4 直連模式";
+      }
+    }
+
+    function selectBracket(size, element) {
+      selectedBracketSize = size;
+      document.querySelectorAll('.bracket-btn').forEach(btn => btn.classList.remove('selected'));
+      element.classList.add('selected');
+    }
+
+    function startGame() {
+      const shuffled = [...CHEER_SONGS].sort(() => 0.5 - Math.random());
+      currentPool = shuffled.slice(0, selectedBracketSize);
+      nextRoundPool = [];
+      matchHistory = [];
+
+      switchScreen('battle-screen');
+      prepareNextMatch();
+    }
+
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    /* ==========================================================
+       回合初始化 (2pick 流程步驟 1：只顯示高畫質縮圖，不急著建立 IFrame)
+       ========================================================== */
+    function prepareNextMatch() {
+      if (currentPool.length < 2) {
+        if (currentPool.length === 1) nextRoundPool.push(currentPool[0]);
+        currentPool = [...nextRoundPool];
+        nextRoundPool = [];
+
+        if (currentPool.length === 1) {
+          showChampion(currentPool[0]);
+          return;
+        }
+      }
+
+      const leftSong = currentPool.shift();
+      const rightSong = currentPool.shift();
+      currentPair = { left: leftSong, right: rightSong };
+
+      updateMatchHeader();
+      startTimer();
+
+      // 先清除舊播放器與設定
+      ['left', 'right'].forEach(side => {
+        const song = currentPair[side];
+        document.getElementById(`title-${side}`).innerText = song.title;
+        document.getElementById(`album-${side}`).innerText = song.album;
+        document.getElementById(`btn-text-${side}`).innerText = song.title;
+        document.getElementById(`stamp-${side}`).classList.remove('show');
+        document.getElementById(`overlay-${side}`).classList.add('hidden');
+
+        // 銷毀或隱藏舊 IFrame
+        if (ytPlayers[side] && typeof ytPlayers[side].destroy === 'function') {
+          try { ytPlayers[side].destroy(); } catch(e){}
+          ytPlayers[side] = null;
+        }
+        document.getElementById(`player-${side}-container`).innerHTML = '';
+        
+        // 1. 立即顯示縮圖 (2pick 核心策略)
+        const thumbImg = document.getElementById(`thumb-${side}`);
+        let vid = extractVideoId(song);
+        thumbImg.src = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+        thumbImg.style.display = 'block';
+
+        // 本地模式或非移動端直接啟動左卡
+        if (playerMode === 'local') {
+          loadLocalMedia(side, song);
+        }
+      });
+
+      // 2pick 流程步驟 2：預設啟動左邊卡片動態建立 IFrame
+      if (playerMode === 'youtube') {
+        setTimeout(() => {
+          buildAndPlay2pickIframe('left', currentPair['left']);
+        }, 200);
+      }
+    }
+
+    /* ==========================================================
+       2pick 流程步驟 2 & 3：Hover/啟動時才動態建立 IFrame + 黃金參數組合
+       ========================================================== */
+    function focusCard(side) {
+      activeAudioSide = side;
+      const otherSide = side === 'left' ? 'right' : 'left';
+
+      document.getElementById(`pill-${side}`).classList.add('playing');
+      document.getElementById(`pill-${side}`).innerHTML = `<i class="fa-solid fa-volume-high"></i> 試聽中`;
+      document.getElementById(`card-${side}`).classList.add('active-focus');
+
+      document.getElementById(`pill-${otherSide}`).classList.remove('playing');
+      document.getElementById(`pill-${otherSide}`).innerHTML = `<i class="fa-solid fa-volume-xmark"></i> 已靜音`;
+      document.getElementById(`card-${otherSide}`).classList.remove('active-focus');
+
+      if (playerMode === 'youtube') {
+        // 如果對方有播放器，靜音
+        if (ytPlayers[otherSide] && typeof ytPlayers[otherSide].mute === 'function') {
+          try { ytPlayers[otherSide].mute(); } catch(e){}
+        }
+
+        // 如果當前 side 還沒建立 IFrame (延遲載入)，現在立刻為他建立黃金參數 IFrame！
+        if (!ytPlayers[side]) {
+          buildAndPlay2pickIframe(side, currentPair[side]);
+        } else if (typeof ytPlayers[side].unMute === 'function') {
+          try {
+            ytPlayers[side].unMute();
+            ytPlayers[side].playVideo();
+          } catch(e){}
+        }
+      } else {
+        // 本地 MP4 模式控制
+        const targetVid = document.getElementById(`video-${side}`);
+        const otherVid = document.getElementById(`video-${otherSide}`);
+        if (otherVid) otherVid.muted = true;
+        if (targetVid && targetVid.src) { targetVid.muted = false; targetVid.play().catch(()=>{}); }
+      }
+    }
+
+    /* ==========================================================
+       核心精髓：建立相容 2pick.app 的 YouTube IFrame (帶入 full params)
+       ========================================================== */
+    function buildAndPlay2pickIframe(side, song) {
+      if (!ytApiReady || !song) return;
+
+      const vid = extractVideoId(song);
+      const containerId = `player-${side}-container`;
+      
+      // 取得 HTTPS Origin 或目前所在 Origin (為將來部署到 Netlify / Vercel 做準備)
+      const currentOrigin = window.location.protocol.startsWith('http') ? window.location.origin : undefined;
+
+      // 建立黃金參數設定 (模仿 2pick.app)
+      ytPlayers[side] = new YT.Player(containerId, {
+        height: '100%',
+        width: '100%',
+        videoId: vid,
+        playerVars: {
+          controls: 1,
+          autoplay: 1,      // 啟動自動播放
+          rel: 0,           // 不顯示非相關推薦影片
+          enablejsapi: 1,   // 允許 JS 完全操作
+          playlist: vid,    // 帶入 playlist 提升相容性
+          origin: currentOrigin,
+          start: song.start || 0,
+          end: song.end || undefined
+        },
+        events: {
+          'onReady': (event) => {
+            console.log(`[2pick Engine] Side [${side}] IFrame created with 2pick params for ID: ${vid}`);
+            if (activeAudioSide === side) {
+              event.target.unMute();
+              event.target.playVideo();
+            } else {
+              event.target.mute();
+            }
+            setTimeout(() => {
+              document.getElementById(`thumb-${side}`).style.display = 'none';
+            }, 800);
+          },
+          'onError': (event) => onPlayerError(side, event)
+        }
+      });
+    }
+
+    function loadLocalMedia(side, song) {
+      const htmlVideo = document.getElementById(`video-${side}`);
+      const ytBox = document.getElementById(`player-${side}-container`);
+      ytBox.style.display = 'none';
+
+      if (song.localAudio) {
+        htmlVideo.src = song.localAudio;
+        htmlVideo.classList.remove('hidden');
+        if (activeAudioSide === side) {
+          htmlVideo.muted = false;
+          htmlVideo.play().catch(()=>{});
+        } else {
+          htmlVideo.muted = true;
+        }
+      } else {
+        const overlay = document.getElementById(`overlay-${side}`);
+        overlay.classList.remove('hidden');
+        document.getElementById(`overlay-title-${side}`).innerText = `未偵測到本地檔案 ${song.localAudio}`;
+        document.getElementById(`overlay-desc-${side}`).innerText = `請於首頁切換回「YouTube IFrame 動態載入模式」，或下載 MP4 至 ./audio/`;
+      }
+    }
+
+    function extractVideoId(song) {
+      if (song.videoId) return song.videoId;
+      if (song.embedHtml) {
+        const match = song.embedHtml.match(/embed\/([a-zA-Z0-9_-]{11})/);
+        if (match) return match[1];
+      }
+      return "P4u92a_v7yQ"; // 預設安全 ID
+    }
+
+    function onPlayerError(side, event) {
+      const errCode = event.data;
+      const song = currentPair[side];
+      console.warn(`[YouTube Error] Side: ${side}, Code: ${errCode}, Song: ${song.title}`);
+
+      if ([101, 150, 153].includes(errCode)) {
+        document.getElementById(`thumb-${side}`).style.display = 'block';
+        const overlay = document.getElementById(`overlay-${side}`);
+        overlay.classList.remove('hidden');
+        document.getElementById(`overlay-icon-${side}`).className = "fa-solid fa-triangle-exclamation icon-status";
+        document.getElementById(`overlay-icon-${side}`).style.color = "var(--accent)";
+        document.getElementById(`overlay-title-${side}`).innerText = "影片擁有者設定禁止外部嵌入";
+        document.getElementById(`overlay-desc-${side}`).innerText = "因為唱片公司勾選了禁止嵌入，或目前位於 file:///。請點開新視窗聽完，回到卡片即可點擊投票：";
+
+        const vid = extractVideoId(song);
+        const extUrl = `https://www.youtube.com/watch?v=${vid}&t=${song.start||0}s`;
+        document.getElementById(`ext-link-${side}`).href = extUrl;
+      }
+    }
+
+    function voteSong(winnerSide, event) {
+      if (event) event.stopPropagation();
+      if (isVoting) return;
+      isVoting = true;
+
+      const loserSide = winnerSide === 'left' ? 'right' : 'left';
+      const winnerSong = currentPair[winnerSide];
+      const loserSong = currentPair[loserSide];
+
+      document.getElementById(`stamp-${winnerSide}`).classList.add('show');
+
+      ['left', 'right'].forEach(s => {
+        if (ytPlayers[s] && typeof ytPlayers[s].pauseVideo === 'function') {
+          try { ytPlayers[s].pauseVideo(); } catch(e){}
+        }
+        const v = document.getElementById(`video-${s}`);
+        if (v) v.pause();
+      });
+
+      matchHistory.push({
+        roundTitle: document.getElementById('round-title-text').innerText,
+        winner: winnerSong,
+        loser: loserSong,
+        timeSpent: secondsElapsed
+      });
+
+      nextRoundPool.push(winnerSong);
+
+      setTimeout(() => {
+        isVoting = false;
+        prepareNextMatch();
+      }, 900);
+    }
+
+    function showChampion(championSong) {
+      stopTimer();
+      switchScreen('result-screen');
+
+      document.getElementById('champion-title-text').innerText = `《${championSong.title}》`;
+      document.getElementById('champion-sub-text').innerText = `🏆 在 ${selectedBracketSize} 首陳綺貞經典對決中，奪下你的唯一靈魂首選！`;
+
+      const vid = extractVideoId(championSong);
+      if (playerMode === 'youtube') {
+        if (ytPlayers.champion && typeof ytPlayers.champion.destroy === 'function') {
+          try { ytPlayers.champion.destroy(); } catch(e){}
+        }
+        ytPlayers.champion = new YT.Player('champion-media-container', {
+          height: '100%',
+          width: '100%',
+          videoId: vid,
+          playerVars: { controls: 1, autoplay: 1, rel: 0, origin: window.location.origin }
+        });
+      }
+
+      const historyListEl = document.getElementById('history-list');
+      historyListEl.innerHTML = '';
+      matchHistory.forEach((match) => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `
+          <div>
+            <span class="text-muted" style="font-size:0.8rem; margin-right:0.5rem;">[${match.roundTitle}]</span>
+            <span class="history-winner"><i class="fa-solid fa-check"></i> 《${match.winner.title}》</span>
+          </div>
+          <div class="history-loser">《${match.loser.title}》</div>
+        `;
+        historyListEl.appendChild(item);
+      });
+    }
+
+    function updateMatchHeader() {
+      const totalRemaining = currentPool.length + 2 + nextRoundPool.length;
+      let roundName = "16強海選";
+      if (totalRemaining <= 2) roundName = "🏆 最終總冠軍戰";
+      else if (totalRemaining <= 4) roundName = "🔥 4強準決賽";
+      else if (totalRemaining <= 8) roundName = "⚡ 8強半決賽";
+
+      document.getElementById('round-title-text').innerText = roundName;
+      document.getElementById('remain-text').innerText = `剩餘候選: ${totalRemaining} 首`;
+
+      const totalMatchesNeeded = selectedBracketSize - 1;
+      const currentMatchNum = matchHistory.length + 1;
+      document.getElementById('match-progress-text').innerText = `(第 ${currentMatchNum} / ${totalMatchesNeeded} 場)`;
+      
+      const percent = Math.min(100, Math.round((matchHistory.length / totalMatchesNeeded) * 100));
+      document.getElementById('progress-fill').style.width = `${percent}%`;
+    }
+
+    function startTimer() {
+      stopTimer();
+      secondsElapsed = 0;
+      updateTimerText();
+      matchTimerInterval = setInterval(() => {
+        secondsElapsed++;
+        updateTimerText();
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (matchTimerInterval) clearInterval(matchTimerInterval);
+    }
+
+    function updateTimerText() {
+      const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+      const secs = String(secondsElapsed % 60).padStart(2, '0');
+      document.getElementById('timer-text').innerText = `${mins}:${secs}`;
+    }
+
+    function shareResult() {
+      const champTitle = document.getElementById('champion-title-text').innerText;
+      const text = `🏆 我在【陳綺貞經典歌曲對決 | 殘酷二選一】經過一輪輪掙扎對決，我的唯一靈魂神曲是：${champTitle}！你也來挑選心目中的第一名吧！`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert("✅ 戰果已成功複製到剪貼簿！");
+        });
+      } else {
+        alert(text);
+      }
+    }
+  </script>
+</body>
+</html>
