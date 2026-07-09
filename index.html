@@ -2147,6 +2147,137 @@
       }
     }
 
+    function stopAllMediaAndIframes() {
+      ['left', 'right', 'champion'].forEach(side => {
+        if (ytPlayers[side]) {
+          try { ytPlayers[side].stopVideo(); } catch(e){}
+          try { ytPlayers[side].pauseVideo(); } catch(e){}
+          try { ytPlayers[side].destroy(); } catch(e){}
+          ytPlayers[side] = null;
+        }
+        const container = document.getElementById(`player-${side}-container`);
+        if (container) container.innerHTML = '';
+        const vidEl = document.getElementById(`video-${side}`);
+        if (vidEl) { vidEl.pause(); vidEl.src = ''; }
+      });
+      if (typeof stopTimer === 'function') stopTimer();
+      if (typeof stopSeekbarTracker === 'function') stopSeekbarTracker();
+    }
+
+    function renderCardOnResume(side, song) {
+      if (!song) return;
+      document.getElementById(`title-${side}`).innerText = song.title || '';
+      document.getElementById(`album-${side}`).innerText = song.album || '';
+      document.getElementById(`btn-text-${side}`).innerText = song.title || '';
+      const stamp = document.getElementById(`stamp-${side}`);
+      if (stamp) stamp.classList.remove('show');
+      const overlay = document.getElementById(`overlay-${side}`);
+      if (overlay) overlay.classList.add('hidden');
+
+      const playerContainer = document.getElementById(`player-${side}-container`);
+      if (playerContainer) playerContainer.innerHTML = '';
+      
+      const thumbImg = document.getElementById(`thumb-${side}`);
+      if (thumbImg) {
+        let vid = typeof extractVideoId === 'function' ? extractVideoId(song) : (song.videoId || '33rdx577PxY');
+        thumbImg.src = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+        thumbImg.style.display = 'block';
+      }
+      isCardPaused[side] = false;
+      const pauseBtn = document.getElementById(`pause-btn-${side}`);
+      if (pauseBtn) {
+        pauseBtn.classList.remove('paused');
+        pauseBtn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>暫停試聽 (思考一下)</span>`;
+      }
+    }
+
+    function saveGameAndExit() {
+      if ((!leftSong || !rightSong) && currentPair) {
+        leftSong = currentPair.left;
+        rightSong = currentPair.right;
+      }
+      if (!leftSong || !rightSong) {
+        alert("⚠️ 當前對決尚未載入或沒有對決曲目可以存檔！");
+        return;
+      }
+      const saveObj = {
+        selectedBracketSize: selectedBracketSize || 64,
+        currentPool: currentPool || [],
+        nextRoundPool: nextRoundPool || [],
+        matchIndex: matchIndex || 0,
+        battleHistory: battleHistory || matchHistory || [],
+        currentRoundName: currentRoundName || "對決中",
+        leftSong: leftSong,
+        rightSong: rightSong,
+        timestamp: new Date().getTime()
+      };
+      localStorage.setItem('CHEER_2PICK_SAVE', JSON.stringify(saveObj));
+      
+      stopAllMediaAndIframes();
+      switchScreen('intro-screen');
+      checkAndShowResumeBanner();
+      alert("💾 對決進度已成功儲存！返回首頁，下一次開啟遊戲隨時可以繼續玩！");
+    }
+
+    function resumeGame() {
+      const existingSave = localStorage.getItem('CHEER_2PICK_SAVE');
+      if (!existingSave) return;
+      
+      try {
+        const saveObj = JSON.parse(existingSave);
+        selectedBracketSize = saveObj.selectedBracketSize || 64;
+        currentPool = saveObj.currentPool || [];
+        nextRoundPool = saveObj.nextRoundPool || [];
+        matchIndex = saveObj.matchIndex || 0;
+        battleHistory = saveObj.battleHistory || [];
+        matchHistory = saveObj.battleHistory || [];
+        currentRoundName = saveObj.currentRoundName || "對決中";
+        leftSong = saveObj.leftSong;
+        rightSong = saveObj.rightSong;
+        currentPair = { left: leftSong, right: rightSong };
+
+        switchScreen('battle-screen');
+        stopAllMediaAndIframes();
+
+        const roundTitleEl = document.getElementById('round-title-text');
+        if (roundTitleEl) roundTitleEl.innerText = currentRoundName;
+
+        const totalMatchesInRound = matchIndex + Math.floor((currentPool.length + nextRoundPool.length * 2) / 2);
+        const progressTextEl = document.getElementById('match-progress-text');
+        if (progressTextEl) progressTextEl.innerText = `(第 ${matchIndex + 1} / ${Math.max(matchIndex + 1, totalMatchesInRound)} 場)`;
+
+        const remainEl = document.getElementById('remain-text');
+        const totalRemain = (leftSong ? 1 : 0) + (rightSong ? 1 : 0) + currentPool.length + nextRoundPool.length;
+        if (remainEl) remainEl.innerText = `剩餘候選: ${totalRemain} 首`;
+
+        if (leftSong) renderCardOnResume('left', leftSong);
+        if (rightSong) renderCardOnResume('right', rightSong);
+
+        if (typeof updateMatchHeader === 'function') updateMatchHeader();
+        if (typeof startSeekbarTracker === 'function') startSeekbarTracker();
+        if (typeof startTimer === 'function') startTimer();
+
+        if (playerMode === 'youtube') {
+          setTimeout(() => {
+            if (leftSong && !isVoting) buildAndPlay2pickIframe('left', leftSong);
+            if (rightSong && !isVoting) buildAndPlay2pickIframe('right', rightSong);
+          }, 150);
+        } else {
+          if (leftSong) loadLocalMedia('left', leftSong);
+          if (rightSong) loadLocalMedia('right', rightSong);
+        }
+
+        setTimeout(() => {
+          if (typeof focusCard === 'function') focusCard('left');
+        }, 350);
+      } catch (e) {
+        console.error("Resume error:", e);
+        alert("存檔檔案讀取異常，將為你開啟全新對決");
+        localStorage.removeItem('CHEER_2PICK_SAVE');
+        startGame(true);
+      }
+    }
+
     function discardSaveAndConfirmNew() {
       if (confirm("確定要刪除當前已儲存的未完成對決進度嗎？")) {
         localStorage.removeItem('CHEER_2PICK_SAVE');
@@ -2421,14 +2552,22 @@
       const otherSide = side === 'left' ? 'right' : 'left';
 
       if (!isCardPaused[side]) {
-        document.getElementById(`pill-${side}`).classList.add('playing');
-        document.getElementById(`pill-${side}`).innerHTML = `<i class="fa-solid fa-volume-high"></i> 試聽中`;
+        const targetPill = document.getElementById(`pill-${side}`);
+        if (targetPill) {
+          targetPill.classList.add('playing');
+          targetPill.innerHTML = `<i class="fa-solid fa-volume-high"></i> 試聽中`;
+        }
       }
-      document.getElementById(`card-${side}`).classList.add('active-focus');
+      const targetCard = document.getElementById(`card-${side}`);
+      if (targetCard) targetCard.classList.add('active-focus');
 
-      document.getElementById(`pill-${otherSide}`).classList.remove('playing');
-      document.getElementById(`pill-${otherSide}`).innerHTML = `<i class="fa-solid fa-volume-xmark"></i> 已靜音`;
-      document.getElementById(`card-${otherSide}`).classList.remove('active-focus');
+      const otherPill = document.getElementById(`pill-${otherSide}`);
+      if (otherPill) {
+        otherPill.classList.remove('playing');
+        otherPill.innerHTML = `<i class="fa-solid fa-volume-xmark"></i> 已靜音`;
+      }
+      const otherCard = document.getElementById(`card-${otherSide}`);
+      if (otherCard) otherCard.classList.remove('active-focus');
 
       if (playerMode === 'youtube') {
         if (ytPlayers[otherSide] && typeof ytPlayers[otherSide].mute === 'function') {
@@ -2437,10 +2576,10 @@
 
         if (!ytPlayers[side]) {
           buildAndPlay2pickIframe(side, currentPair[side]);
-        } else if (typeof ytPlayers[side].unMute === 'function' && !isCardPaused[side]) {
+        } else if (!isCardPaused[side]) {
           try {
-            ytPlayers[side].unMute();
-            ytPlayers[side].playVideo();
+            if (typeof ytPlayers[side].unMute === 'function') ytPlayers[side].unMute();
+            if (typeof ytPlayers[side].playVideo === 'function') ytPlayers[side].playVideo();
           } catch(e){}
         }
       } else {
@@ -2454,7 +2593,7 @@
     function buildAndPlay2pickIframe(side, song) {
       if (!ytApiReady || !song || isVoting) return;
 
-      const vid = extractVideoId(song);
+      const vid = typeof extractVideoId === 'function' ? extractVideoId(song) : (song.videoId || '33rdx577PxY');
       const containerId = `player-${side}-container`;
       const currentOrigin = window.location.protocol.startsWith('http') ? window.location.origin : undefined;
 
@@ -2468,6 +2607,10 @@
       if (typeof song.start === 'number' && song.start > 0) playerVars.start = song.start;
       if (typeof song.end === 'number' && song.end > 0) playerVars.end = song.end;
 
+      if (ytPlayers[side] && typeof ytPlayers[side].destroy === 'function') {
+        try { ytPlayers[side].destroy(); } catch(e){}
+      }
+
       ytPlayers[side] = new YT.Player(containerId, {
         height: '100%',
         width: '100%',
@@ -2476,15 +2619,16 @@
         events: {
           'onReady': (event) => {
             if (activeAudioSide === side && !isVoting && !isCardPaused[side]) {
-              event.target.unMute();
-              event.target.playVideo();
+              try { event.target.unMute(); event.target.playVideo(); } catch(e){}
             } else {
-              event.target.mute();
-              event.target.playVideo();
+              try { event.target.mute(); event.target.playVideo(); } catch(e){}
             }
-            setTimeout(() => {
-              if (!isVoting) document.getElementById(`thumb-${side}`).style.display = 'none';
-            }, 600);
+          },
+          'onStateChange': (event) => {
+            if (event.data === 1 && !isVoting) {
+              const thumb = document.getElementById(`thumb-${side}`);
+              if (thumb) thumb.style.display = 'none';
+            }
           },
           'onError': (event) => onPlayerError(side, event)
         }
@@ -2494,9 +2638,9 @@
     function loadLocalMedia(side, song) {
       const htmlVideo = document.getElementById(`video-${side}`);
       const ytBox = document.getElementById(`player-${side}-container`);
-      ytBox.style.display = 'none';
+      if (ytBox) ytBox.style.display = 'none';
 
-      if (song.localAudio) {
+      if (song && song.localAudio && htmlVideo) {
         htmlVideo.src = song.localAudio;
         htmlVideo.classList.remove('hidden');
         if (activeAudioSide === side && !isVoting) {
@@ -2504,23 +2648,9 @@
           htmlVideo.play().catch(()=>{});
         } else {
           htmlVideo.muted = true;
+          htmlVideo.play().catch(()=>{});
         }
-      } else {
-        const overlay = document.getElementById(`overlay-${side}`);
-        overlay.classList.remove('hidden');
-        document.getElementById(`overlay-title-${side}`).innerText = `未偵測到本地檔案`;
-        document.getElementById(`overlay-desc-${side}`).innerText = `請在 audio/ 夾層放入音檔，或切換至 YouTube 模式`;
       }
-    }
-
-    function extractVideoId(song) {
-      if (!song) return "33rdx577PxY";
-      if (song.videoId) return song.videoId;
-      if (song.embedHtml) {
-        const match = song.embedHtml.match(/embed\/([a-zA-Z0-9_-]{11})/);
-        if (match) return match[1];
-      }
-      return "33rdx577PxY";
     }
 
     function onPlayerError(side, event) {
