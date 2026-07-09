@@ -1197,25 +1197,6 @@
           </div>
         </div>
 
-        <div id="resume-banner-container" class="hidden" style="margin-bottom: 1.25rem; width: 100%;">
-          <div class="resume-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 212, 0.18)); border: 2px solid #10b981; border-radius: 22px; padding: 1.35rem 1.6rem; text-align: left; box-shadow: 0 0 30px rgba(16, 185, 129, 0.35);">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
-              <span style="color: #34d399; font-weight: 900; font-size: 1.08rem; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-cloud-arrow-down fa-bounce"></i> 偵測到上次未完成的對決存檔進度</span>
-              <span class="badge-round" id="resume-round-badge" style="background: rgba(16,185,129,0.25); border: 1px solid #34d399; color: #fff; padding: 0.25rem 0.75rem; border-radius: 8px; font-size: 0.85rem; font-weight: 800;">4強準決賽</span>
-            </div>
-            <p style="color: #fff; font-size: 0.98rem; margin-bottom: 1.1rem; line-height: 1.5;" id="resume-info-text">
-              正在進行對決：《我喜歡木村拓哉》 VS 《小塵埃》 (剩餘候選: 4 首)
-            </p>
-            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-              <button onclick="resumeGame()" style="flex: 1; min-width: 210px; background: #10b981; color: #000; border: none; padding: 0.8rem 1.3rem; border-radius: 14px; font-weight: 900; font-size: 1.02rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5); transition: all 0.2s;">
-                <i class="fa-solid fa-play"></i> 繼續上一次未完進度
-              </button>
-              <button onclick="discardSaveAndConfirmNew()" style="background: rgba(255, 255, 255, 0.12); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4); padding: 0.8rem 1.2rem; border-radius: 14px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s;">
-                <i class="fa-solid fa-trash-can"></i> 刪除存檔
-              </button>
-            </div>
-          </div>
-        </div>
         <button class="start-btn" onclick="startGame()">
           <span>立即展開殘酷對決</span>
           <i class="fa-solid fa-arrow-right"></i>
@@ -1362,10 +1343,10 @@
         </div>
       </div>
 
-      <div class="battle-bottom-actions" style="margin-top: 2.2rem; margin-bottom: 1.5rem; display: flex; justify-content: center; width: 100%;">
-        <button class="save-exit-btn" onclick="saveGameAndExit()" style="padding: 0.95rem 2rem; font-size: 1.08rem; border-radius: 20px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(236, 72, 153, 0.25)); border: 2px solid var(--accent); box-shadow: 0 0 25px rgba(245, 158, 11, 0.45); cursor: pointer; display: flex; align-items: center; gap: 0.6rem; color: #fff; font-weight: 800;" title="暫停並儲存對決進度，返回首頁隨時可以繼續玩">
-          <i class="fa-solid fa-floppy-disk fa-bounce" style="--fa-animation-duration: 3s; color: var(--accent);"></i>
-          <span>💾 存檔對決進度並返回首頁 (隨時可繼續)</span>
+      <div class="battle-bottom-actions" style="margin-top: 2.2rem; margin-bottom: 1.5rem; display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; width: 100%;">
+        <button class="save-exit-btn" onclick="confirmExitToHome()" style="padding: 0.85rem 1.8rem; font-size: 1.02rem; border-radius: 18px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; color: #fff; font-weight: 600; transition: all 0.2s;">
+          <i class="fa-solid fa-house"></i>
+          <span>返回首頁 (重新選擇海選)</span>
         </button>
       </div>
     </section>
@@ -1808,6 +1789,8 @@
 
     let ytPlayers = { left: null, right: null, champion: null };
     let ytApiReady = false;
+    let seekbarInterval = null;
+    let isSeeking = { left: false, right: false };
     let matchTimerInterval = null;
     let secondsElapsed = 0;
 
@@ -1839,22 +1822,9 @@
       element.classList.add('selected');
     }
 
-    function startGame(forceNew = false) {
-      const existingSave = localStorage.getItem('CHEER_2PICK_SAVE');
-      if (existingSave && !forceNew) {
-        let saveObj;
-        try { saveObj = JSON.parse(existingSave); } catch(e){}
-        const roundTxt = saveObj ? saveObj.currentRoundName : '未完對決';
-        const msg = `⚠️ 溫馨提醒：系統偵測到你目前尚有一個未玩完的【 ${roundTxt} 】進度存檔！\n\n・點選「確定」：將刪除舊存檔，重頭開始一局全新的對決\n・點選「取消」：保留舊存檔，隨時可點擊畫面的綠色按鈕繼續上次進度`;
-        if (confirm(msg)) {
-          localStorage.removeItem('CHEER_2PICK_SAVE');
-          checkAndShowResumeBanner();
-        } else {
-          return; // Player cancelled creating new game
-        }
-      }
-
-      // Reset internal state
+    function startGame() {
+      try { localStorage.removeItem('CHEER_2PICK_SAVE'); } catch(e){}
+      battleHistory = [];
       battleHistory = [];
       matchIndex = 0;
       startTimer();
@@ -2093,177 +2063,28 @@
       if (typeof stopSeekbarTracker === 'function') stopSeekbarTracker();
     }
 
-    function renderCardOnResume(side, song) {
-      if (!song) return;
-      document.getElementById(`title-${side}`).innerText = song.title || '';
-      document.getElementById(`album-${side}`).innerText = song.album || '';
-      document.getElementById(`btn-text-${side}`).innerText = song.title || '';
-      const stamp = document.getElementById(`stamp-${side}`);
-      if (stamp) stamp.classList.remove('show');
-      const overlay = document.getElementById(`overlay-${side}`);
-      if (overlay) overlay.classList.add('hidden');
-
-      const playerContainer = document.getElementById(`player-${side}-container`);
-      if (playerContainer) playerContainer.innerHTML = '';
-      
-      const thumbImg = document.getElementById(`thumb-${side}`);
-      if (thumbImg) {
-        let vid = typeof extractVideoId === 'function' ? extractVideoId(song) : (song.videoId || '33rdx577PxY');
-        thumbImg.src = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
-        thumbImg.style.display = 'block';
-      }
-      isCardPaused[side] = false;
-      const pauseBtn = document.getElementById(`pause-btn-${side}`);
-      if (pauseBtn) {
-        pauseBtn.classList.remove('paused');
-        pauseBtn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>暫停試聽 (思考一下)</span>`;
-      }
-    }
-
-    function saveGameAndExit() {
-      if ((!leftSong || !rightSong) && currentPair) {
-        leftSong = currentPair.left;
-        rightSong = currentPair.right;
-      }
-      if (!leftSong || !rightSong) {
-        alert("⚠️ 當前對決尚未載入或沒有對決曲目可以存檔！");
-        return;
-      }
-      const saveObj = {
-        version: "v2.5_demo3_search",
-        selectedBracketSize: selectedBracketSize || 64,
-        currentPool: currentPool || [],
-        nextRoundPool: nextRoundPool || [],
-        matchIndex: matchIndex || 0,
-        battleHistory: battleHistory || matchHistory || [],
-        currentRoundName: currentRoundName || "對決中",
-        leftSong: leftSong,
-        rightSong: rightSong,
-        timestamp: new Date().getTime()
-      };
-      localStorage.setItem('CHEER_2PICK_SAVE', JSON.stringify(saveObj));
-      
-      stopAllMediaAndIframes();
-      switchScreen('intro-screen');
-      checkAndShowResumeBanner();
-      alert("💾 對決進度已成功儲存！返回首頁，下一次開啟遊戲隨時可以繼續玩！");
-    }
-
-    function resumeGame() {
-      const existingSave = localStorage.getItem('CHEER_2PICK_SAVE');
-      if (!existingSave) return;
-      
-      try {
-        const saveObj = JSON.parse(existingSave);
-        if (saveObj.version !== "v2.5_demo3_search") {
-          alert("⚠️ 偵測到遊戲曲庫有重大更新（加入了《Demo 3》經典與全新搜尋系統），為了維持最佳與最新的對決體驗，舊版存檔已自動重置，將為你開啟全新對決！");
-          localStorage.removeItem('CHEER_2PICK_SAVE');
-          startGame(true);
-          return;
-        }
-
-        selectedBracketSize = saveObj.selectedBracketSize || 64;
-        currentPool = saveObj.currentPool || [];
-        nextRoundPool = saveObj.nextRoundPool || [];
-        matchIndex = saveObj.matchIndex || 0;
-        battleHistory = saveObj.battleHistory || [];
-        matchHistory = saveObj.battleHistory || [];
-        currentRoundName = saveObj.currentRoundName || "對決中";
-        leftSong = saveObj.leftSong;
-        rightSong = saveObj.rightSong;
-        currentPair = { left: leftSong, right: rightSong };
-
-        switchScreen('battle-screen');
+    function confirmExitToHome() {
+      if (confirm("確定要返回首頁重新選擇對決規模嗎？（當前對決紀錄將不會保留）")) {
         stopAllMediaAndIframes();
-
-        const roundTitleEl = document.getElementById('round-title-text');
-        if (roundTitleEl) roundTitleEl.innerText = currentRoundName;
-
-        const totalMatchesInRound = matchIndex + Math.floor((currentPool.length + nextRoundPool.length * 2) / 2);
-        const progressTextEl = document.getElementById('match-progress-text');
-        if (progressTextEl) progressTextEl.innerText = `(第 ${matchIndex + 1} / ${Math.max(matchIndex + 1, totalMatchesInRound)} 場)`;
-
-        const remainEl = document.getElementById('remain-text');
-        const totalRemain = (leftSong ? 1 : 0) + (rightSong ? 1 : 0) + currentPool.length + nextRoundPool.length;
-        if (remainEl) remainEl.innerText = `剩餘候選: ${totalRemain} 首`;
-
-        if (leftSong) renderCardOnResume('left', leftSong);
-        if (rightSong) renderCardOnResume('right', rightSong);
-
-        if (typeof updateMatchHeader === 'function') updateMatchHeader();
-        if (typeof startSeekbarTracker === 'function') startSeekbarTracker();
-        if (typeof startTimer === 'function') startTimer();
-
-        if (playerMode === 'youtube') {
-          setTimeout(() => {
-            if (leftSong && !isVoting) buildAndPlay2pickIframe('left', leftSong);
-            if (rightSong && !isVoting) buildAndPlay2pickIframe('right', rightSong);
-          }, 150);
-        } else {
-          if (leftSong) loadLocalMedia('left', leftSong);
-          if (rightSong) loadLocalMedia('right', rightSong);
-        }
-
-        setTimeout(() => {
-          if (typeof focusCard === 'function') focusCard('left');
-        }, 350);
-      } catch (e) {
-        console.error("Resume error:", e);
-        alert("存檔檔案讀取異常，將為你開啟全新對決");
-        localStorage.removeItem('CHEER_2PICK_SAVE');
-        startGame(true);
-      }
-    }
-
-    function discardSaveAndConfirmNew() {
-      if (confirm("確定要刪除當前已儲存的未完成對決進度嗎？")) {
-        localStorage.removeItem('CHEER_2PICK_SAVE');
-        const container = document.getElementById('resume-banner-container');
-        if (container) {
-          container.style.display = 'none';
-          container.classList.add('hidden');
-        }
-        alert("🗑️ 舊進度存檔已成功刪除！");
-      }
-    }
-
-    function checkAndShowResumeBanner() {
-      const container = document.getElementById('resume-banner-container');
-      if (!container) return;
-      const existingSave = localStorage.getItem('CHEER_2PICK_SAVE');
-      if (existingSave && existingSave !== 'null' && existingSave !== '') {
-        try {
-          const saveObj = JSON.parse(existingSave);
-          if (saveObj.version !== "v2.5_demo3_search") {
-            localStorage.removeItem('CHEER_2PICK_SAVE');
-            container.style.display = 'none';
-            container.classList.add('hidden');
-            return;
-          }
-
-          const roundBadge = document.getElementById('resume-round-badge');
-          const infoText = document.getElementById('resume-info-text');
-          if (roundBadge) roundBadge.innerText = saveObj.currentRoundName || "未完對決";
-          const totalRemain = (saveObj.leftSong ? 1 : 0) + (saveObj.rightSong ? 1 : 0) + (saveObj.currentPool ? saveObj.currentPool.length : 0) + (saveObj.nextRoundPool ? saveObj.nextRoundPool.length : 0);
-          if (infoText && saveObj.leftSong && saveObj.rightSong) {
-            infoText.innerHTML = `正在進行對決：<b>《${saveObj.leftSong.title}》</b> VS <b>《${saveObj.rightSong.title}》</b> <small style="color: #34d399; margin-left: 8px;">(剩餘候選: ${totalRemain} 首)</small>`;
-          }
-          container.style.display = 'block';
-          container.classList.remove('hidden');
-        } catch(e) {
-          container.style.display = 'none';
-          container.classList.add('hidden');
-        }
-      } else {
-        container.style.display = 'none';
-        container.classList.add('hidden');
+        switchScreen('intro-screen');
       }
     }
 
     function switchScreen(screenId) {
-      if (screenId === 'intro-screen') checkAndShowResumeBanner();
-      document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.add('active');
+      if (screenId === 'intro-screen') stopAllMediaAndIframes();
+    }
+
+    function extractVideoId(song) {
+      if (!song) return '33rdx577PxY';
+      if (song.videoId) return song.videoId;
+      if (song.url) {
+        let m = song.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+        if (m && m[1]) return m[1];
+      }
+      return '33rdx577PxY';
     }
 
     function prepareNextMatch() {
@@ -2310,59 +2131,58 @@
 
       ['left', 'right'].forEach(side => {
         const song = currentPair[side];
-        document.getElementById(`title-${side}`).innerText = song.title;
-        document.getElementById(`album-${side}`).innerText = song.album;
-        document.getElementById(`btn-text-${side}`).innerText = song.title;
-        document.getElementById(`stamp-${side}`).classList.remove('show');
-        document.getElementById(`overlay-${side}`).classList.add('hidden');
+        const titleEl = document.getElementById(`title-${side}`);
+        if (titleEl) titleEl.innerText = song.title || '';
+        const albumEl = document.getElementById(`album-${side}`);
+        if (albumEl) albumEl.innerText = song.album || '';
+        const btnTextEl = document.getElementById(`btn-text-${side}`);
+        if (btnTextEl) btnTextEl.innerText = song.title || '';
+        const stamp = document.getElementById(`stamp-${side}`);
+        if (stamp) stamp.classList.remove('show');
+        const overlay = document.getElementById(`overlay-${side}`);
+        if (overlay) overlay.classList.add('hidden');
 
         if (ytPlayers[side] && typeof ytPlayers[side].destroy === 'function') {
           try { ytPlayers[side].destroy(); } catch(e){}
           ytPlayers[side] = null;
         }
-        document.getElementById(`player-${side}-container`).innerHTML = '';
+        const container = document.getElementById(`player-${side}-container`);
+        if (container) container.innerHTML = '';
         
         const thumbImg = document.getElementById(`thumb-${side}`);
         let vid = extractVideoId(song);
-        thumbImg.src = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
-        thumbImg.style.display = 'block';
-
-        if (playerMode === 'local') {
-          loadLocalMedia(side, song);
+        if (thumbImg) {
+          thumbImg.src = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+          thumbImg.style.display = 'block';
         }
-      });
-
-      isCardPaused = { left: false, right: false };
-      ['left', 'right'].forEach(side => {
-        const btn = document.getElementById(`pause-btn-${side}`);
-        if (btn) {
-          btn.classList.remove('paused');
-          btn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>暫停試聽 (思考一下)</span>`;
+        isCardPaused[side] = false;
+        const pauseBtn = document.getElementById(`pause-btn-${side}`);
+        if (pauseBtn) {
+          pauseBtn.classList.remove('paused');
+          pauseBtn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>暫停試聽 (思考一下)</span>`;
         }
       });
 
       if (playerMode === 'youtube') {
         setTimeout(() => {
-          if (currentPair['left'] && !isVoting) {
-            buildAndPlay2pickIframe('left', currentPair['left']);
-          }
-          if (currentPair['right'] && !isVoting) {
-            buildAndPlay2pickIframe('right', currentPair['right']);
-          }
+          if (currentPair['left'] && !isVoting) buildAndPlay2pickIframe('left', currentPair['left']);
+          if (currentPair['right'] && !isVoting) buildAndPlay2pickIframe('right', currentPair['right']);
         }, 150);
+      } else {
+        loadLocalMedia('left', currentPair['left']);
+        loadLocalMedia('right', currentPair['right']);
       }
-    }
 
-    
-    
-    let isSeeking = { left: false, right: false };
-    let seekbarInterval = null;
+      setTimeout(() => {
+        if (typeof focusCard === 'function') focusCard('left');
+      }, 350);
+    }
 
     function startSeekbarTracker() {
       if (seekbarInterval) clearInterval(seekbarInterval);
       seekbarInterval = setInterval(() => {
         ['left', 'right'].forEach(side => {
-          if (isVoting || isSeeking[side] || !currentPair[side]) return;
+          if (isVoting || isSeeking[side] || !currentPair || !currentPair[side]) return;
           const timeEl = document.getElementById(`time-text-${side}`);
           const seekEl = document.getElementById(`seekbar-${side}`);
           if (!timeEl || !seekEl) return;
@@ -2383,85 +2203,76 @@
           }
 
           if (dur > 0) {
-            seekEl.max = dur;
-            seekEl.value = cur;
-            timeEl.innerText = `${formatTimeSec(cur)} / ${formatTimeSec(dur)}`;
-          } else {
-            timeEl.innerText = "載入中 / 00:00";
+            const pct = (cur / dur) * 100;
+            seekEl.value = pct;
+            const curM = String(Math.floor(cur / 60)).padStart(2, '0');
+            const curS = String(Math.floor(cur % 60)).padStart(2, '0');
+            const durM = String(Math.floor(dur / 60)).padStart(2, '0');
+            const durS = String(Math.floor(dur % 60)).padStart(2, '0');
+            timeEl.innerText = `${curM}:${curS} / ${durM}:${durS}`;
           }
         });
-      }, 300);
+      }, 500);
     }
 
-    function formatTimeSec(s) {
-      if (isNaN(s) || s < 0) return "00:00";
-      const m = Math.floor(s / 60);
-      const sec = Math.floor(s % 60);
-      return `${m < 10 ? '0'+m : m}:${sec < 10 ? '0'+sec : sec}`;
+    function stopSeekbarTracker() {
+      if (seekbarInterval) clearInterval(seekbarInterval);
     }
 
-    function seekStep(side, deltaSec, event) {
+    function seekStep(side, seconds, event) {
       if (event) event.stopPropagation();
-      if (isVoting || !currentPair[side]) return;
-
-      let cur = 0;
-      let dur = 0;
+      if (isVoting || !currentPair || !currentPair[side]) return;
       if (playerMode === 'youtube' && ytPlayers[side] && typeof ytPlayers[side].getCurrentTime === 'function') {
         try {
-          cur = ytPlayers[side].getCurrentTime() || 0;
-          dur = ytPlayers[side].getDuration() || 0;
-          let target = Math.max(0, Math.min(dur, cur + deltaSec));
+          const cur = ytPlayers[side].getCurrentTime() || 0;
+          const dur = ytPlayers[side].getDuration() || 0;
+          let target = Math.max(0, Math.min(dur, cur + seconds));
           ytPlayers[side].seekTo(target, true);
         } catch(e){}
       } else {
         const vid = document.getElementById(`video-${side}`);
         if (vid && !isNaN(vid.duration)) {
-          let target = Math.max(0, Math.min(vid.duration, vid.currentTime + deltaSec));
-          vid.currentTime = target;
+          vid.currentTime = Math.max(0, Math.min(vid.duration, vid.currentTime + seconds));
         }
       }
     }
 
-    function seekCardTo(side, val, event) {
+    function seekCardTo(side, percent, event) {
       if (event) event.stopPropagation();
-      if (isVoting || !currentPair[side]) return;
-
-      const targetSec = parseFloat(val);
-      const timeEl = document.getElementById(`time-text-${side}`);
-
-      if (playerMode === 'youtube' && ytPlayers[side] && typeof ytPlayers[side].seekTo === 'function') {
+      let dur = 0;
+      if (playerMode === 'youtube' && ytPlayers[side] && typeof ytPlayers[side].getDuration === 'function') {
         try {
-          let dur = ytPlayers[side].getDuration() || 0;
-          if (dur > 0 && timeEl) {
-            timeEl.innerText = `${formatTimeSec(targetSec)} / ${formatTimeSec(dur)}`;
+          dur = ytPlayers[side].getDuration() || 0;
+          if (dur > 0) {
+            const targetTime = (percent / 100) * dur;
+            ytPlayers[side].seekTo(targetTime, true);
           }
-          ytPlayers[side].seekTo(targetSec, true);
         } catch(e){}
       } else {
         const vid = document.getElementById(`video-${side}`);
-        if (vid && !isNaN(vid.duration)) {
-          if (timeEl) timeEl.innerText = `${formatTimeSec(targetSec)} / ${formatTimeSec(vid.duration)}`;
-          vid.currentTime = targetSec;
+        if (vid && !isNaN(vid.duration) && vid.duration > 0) {
+          const targetTime = (percent / 100) * vid.duration;
+          vid.currentTime = targetTime;
         }
       }
     }
 
     function togglePauseCard(side, event) {
       if (event) event.stopPropagation();
-      if (isVoting || !currentPair[side]) return;
-
+      if (isVoting || !currentPair || !currentPair[side]) return;
+      
       isCardPaused[side] = !isCardPaused[side];
-      const btn = document.getElementById(`pause-btn-${side}`);
+      const pauseBtn = document.getElementById(`pause-btn-${side}`);
       const pill = document.getElementById(`pill-${side}`);
 
       if (isCardPaused[side]) {
-        if (btn) {
-          btn.classList.add('paused');
-          btn.innerHTML = `<i class="fa-solid fa-play"></i> <span>繼續試聽</span>`;
+        if (pauseBtn) {
+          pauseBtn.classList.add('paused');
+          pauseBtn.innerHTML = `<i class="fa-solid fa-play"></i> <span>繼續試聽</span>`;
         }
         if (pill) {
           pill.classList.remove('playing');
-          pill.innerHTML = `<i class="fa-solid fa-pause"></i> 已暫停思考`;
+          pill.innerHTML = `<i class="fa-solid fa-pause"></i> 已暫停`;
         }
         if (playerMode === 'youtube' && ytPlayers[side] && typeof ytPlayers[side].pauseVideo === 'function') {
           try { ytPlayers[side].pauseVideo(); } catch(e){}
@@ -2470,28 +2281,16 @@
           if (vid) vid.pause();
         }
       } else {
-        if (btn) {
-          btn.classList.remove('paused');
-          btn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>暫停試聽 (思考一下)</span>`;
+        if (pauseBtn) {
+          pauseBtn.classList.remove('paused');
+          pauseBtn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>暫停試聽 (思考一下)</span>`;
         }
-        if (pill) {
-          pill.classList.add('playing');
-          pill.innerHTML = `<i class="fa-solid fa-volume-high"></i> 試聽中`;
-        }
-        if (playerMode === 'youtube' && ytPlayers[side] && typeof ytPlayers[side].playVideo === 'function') {
-          try {
-            ytPlayers[side].unMute();
-            ytPlayers[side].playVideo();
-          } catch(e){}
-        } else {
-          const vid = document.getElementById(`video-${side}`);
-          if (vid) { vid.muted = false; vid.play().catch(()=>{}); }
-        }
+        focusCard(side);
       }
     }
 
     function focusCard(side) {
-      if (isVoting || !currentPair[side]) return;
+      if (isVoting || !currentPair || !currentPair[side]) return;
       activeAudioSide = side;
       const otherSide = side === 'left' ? 'right' : 'left';
 
@@ -2537,7 +2336,7 @@
     function buildAndPlay2pickIframe(side, song) {
       if (!ytApiReady || !song || isVoting) return;
 
-      const vid = typeof extractVideoId === 'function' ? extractVideoId(song) : (song.videoId || '33rdx577PxY');
+      const vid = extractVideoId(song);
       const containerId = `player-${side}-container`;
       const currentOrigin = window.location.protocol.startsWith('http') ? window.location.origin : undefined;
 
@@ -2599,91 +2398,62 @@
 
     function onPlayerError(side, event) {
       const errCode = event.data;
-      const song = currentPair[side];
+      const song = currentPair ? currentPair[side] : null;
       if (!song) return;
       console.warn(`[YouTube Error] Side: ${side}, Code: ${errCode}, Song: ${song.title}`);
 
       if ([101, 150, 153].includes(errCode)) {
-        document.getElementById(`thumb-${side}`).style.display = 'block';
+        const thumb = document.getElementById(`thumb-${side}`);
+        if (thumb) thumb.style.display = 'block';
         const overlay = document.getElementById(`overlay-${side}`);
-        overlay.classList.remove('hidden');
+        if (overlay) overlay.classList.remove('hidden');
 
         const vid = extractVideoId(song);
         const extUrl = `https://www.youtube.com/watch?v=${vid}&t=${song.start||0}s`;
-        document.getElementById(`ext-link-${side}`).href = extUrl;
+        const extLink = document.getElementById(`ext-link-${side}`);
+        if (extLink) extLink.href = extUrl;
       }
     }
 
     function voteSong(winnerSide, event) {
       if (event) event.stopPropagation();
-      if (isVoting || !currentPair['left'] || !currentPair['right']) return;
+      if (isVoting || !currentPair) return;
       isVoting = true;
 
       const loserSide = winnerSide === 'left' ? 'right' : 'left';
       const winnerSong = currentPair[winnerSide];
       const loserSong = currentPair[loserSide];
 
-      document.getElementById(`stamp-${winnerSide}`).classList.add('show');
+      const stamp = document.getElementById(`stamp-${winnerSide}`);
+      if (stamp) stamp.classList.add('show');
+      const winCard = document.getElementById(`card-${winnerSide}`);
+      if (winCard) winCard.classList.add('winning');
+      const loseCard = document.getElementById(`card-${loserSide}`);
+      if (loseCard) loseCard.classList.add('losing');
 
-      ['left', 'right'].forEach(s => {
-        if (ytPlayers[s] && typeof ytPlayers[s].pauseVideo === 'function') {
-          try { ytPlayers[s].pauseVideo(); } catch(e){}
+      ['left', 'right'].forEach(side => {
+        if (ytPlayers[side] && typeof ytPlayers[side].pauseVideo === 'function') {
+          try { ytPlayers[side].pauseVideo(); } catch(e){}
         }
-        const v = document.getElementById(`video-${s}`);
-        if (v) v.pause();
+        const vid = document.getElementById(`video-${side}`);
+        if (vid) vid.pause();
       });
 
       matchHistory.push({
-        roundTitle: document.getElementById('round-title-text').innerText,
+        matchNumber: matchIndex + 1,
         winner: winnerSong,
         loser: loserSong,
-        timeSpent: secondsElapsed
+        round: currentRoundName
       });
-
       nextRoundPool.push(winnerSong);
+      matchIndex++;
 
       setTimeout(() => {
+        if (winCard) winCard.classList.remove('winning');
+        if (loseCard) loseCard.classList.remove('losing');
+        if (stamp) stamp.classList.remove('show');
         prepareNextMatch();
-      }, 750);
-    }
-
-    function showChampion(championSong) {
-      stopTimer();
-      switchScreen('result-screen');
-
-      if (!championSong) return;
-
-      document.getElementById('champion-title-text').innerText = `《${championSong.title}》`;
-      document.getElementById('champion-sub-text').innerText = `🏆 在 ${selectedBracketSize} 首陳綺貞經典對決中，奪下你的唯一靈魂首選！`;
-
-      const vid = extractVideoId(championSong);
-      if (playerMode === 'youtube') {
-        if (ytPlayers.champion && typeof ytPlayers.champion.destroy === 'function') {
-          try { ytPlayers.champion.destroy(); } catch(e){}
-        }
-        ytPlayers.champion = new YT.Player('champion-media-container', {
-          height: '100%',
-          width: '100%',
-          videoId: vid,
-          playerVars: { controls: 1, autoplay: 1, rel: 0, origin: window.location.origin }
-        });
-      }
-
-      const historyListEl = document.getElementById('history-list');
-      historyListEl.innerHTML = '';
-      matchHistory.forEach((match) => {
-        if (!match || !match.winner || !match.loser) return;
-        const item = document.createElement('div');
-        item.className = 'history-item';
-        item.innerHTML = `
-          <div>
-            <span class="text-muted" style="font-size:0.8rem; margin-right:0.5rem;">[${match.roundTitle}]</span>
-            <span class="history-winner"><i class="fa-solid fa-check"></i> 《${match.winner.title}》</span>
-          </div>
-          <div class="history-loser">《${match.loser.title}》</div>
-        `;
-        historyListEl.appendChild(item);
-      });
+      }, 700);
     }
 
     function updateMatchHeader() {
@@ -2692,16 +2462,50 @@
       if (totalRemaining <= 2) roundName = "🏆 最終總冠軍戰";
       else if (totalRemaining <= 4) roundName = "🔥 4強準決賽";
       else if (totalRemaining <= 8) roundName = "⚡ 8強半決賽";
+      else roundName = currentRoundName || "海選對決";
 
-      document.getElementById('round-title-text').innerText = roundName;
-      document.getElementById('remain-text').innerText = `剩餘候選: ${totalRemaining} 首`;
+      const roundTitleEl = document.getElementById('round-title-text');
+      if (roundTitleEl) roundTitleEl.innerText = roundName;
+      const remainEl = document.getElementById('remain-text');
+      if (remainEl) remainEl.innerText = `剩餘候選: ${totalRemaining} 首`;
 
       const totalMatchesNeeded = selectedBracketSize - 1;
       const currentMatchNum = matchHistory.length + 1;
-      document.getElementById('match-progress-text').innerText = `(第 ${currentMatchNum} / ${totalMatchesNeeded} 場)`;
+      const progressTxt = document.getElementById('match-progress-text');
+      if (progressTxt) progressTxt.innerText = `(第 ${currentMatchNum} / ${totalMatchesNeeded} 場)`;
       
       const percent = Math.min(100, Math.round((matchHistory.length / totalMatchesNeeded) * 100));
-      document.getElementById('progress-fill').style.width = `${percent}%`;
+      const progFill = document.getElementById('progress-fill');
+      if (progFill) progFill.style.width = `${percent}%`;
+    }
+
+    function showChampion(winnerSong) {
+      stopAllMediaAndIframes();
+      switchScreen('result-screen');
+
+      const titleEl = document.getElementById('champion-title-text');
+      if (titleEl) titleEl.innerText = `《${winnerSong.title}》`;
+      const subEl = document.getElementById('champion-sub-text');
+      if (subEl) subEl.innerText = `🏆 經過 ${selectedBracketSize} 強殘酷二選一，這是你靈魂深處最重要的陳綺貞經典神曲！`;
+
+      const container = document.getElementById('champion-media-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const vid = extractVideoId(winnerSong);
+      const currentOrigin = window.location.protocol.startsWith('http') ? window.location.origin : undefined;
+
+      ytPlayers.champion = new YT.Player('champion-media-container', {
+        height: '100%',
+        width: '100%',
+        videoId: vid,
+        playerVars: {
+          controls: 1,
+          autoplay: 1,
+          rel: 0,
+          origin: currentOrigin
+        }
+      });
     }
 
     function startTimer() {
@@ -2712,6 +2516,12 @@
         secondsElapsed++;
         updateTimerText();
       }, 1000);
+    }
+
+    function confirmRestart() {
+      if (confirm("確定要重新開始一局全新的對決嗎？")) {
+        startGame();
+      }
     }
 
     function stopTimer() {
