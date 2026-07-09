@@ -1234,20 +1234,21 @@
       const containerId = `player-${side}-container`;
       const currentOrigin = window.location.protocol.startsWith('http') ? window.location.origin : undefined;
 
+      const playerVars = {
+        controls: 1,
+        autoplay: 1,
+        rel: 0,
+        enablejsapi: 1,
+        origin: currentOrigin
+      };
+      if (typeof song.start === 'number' && song.start > 0) playerVars.start = song.start;
+      if (typeof song.end === 'number' && song.end > 0) playerVars.end = song.end;
+
       ytPlayers[side] = new YT.Player(containerId, {
         height: '100%',
         width: '100%',
         videoId: vid,
-        playerVars: {
-          controls: 1,
-          autoplay: 1,
-          rel: 0,
-          enablejsapi: 1,
-          playlist: vid,
-          origin: currentOrigin,
-          start: song.start || 0,
-          end: song.end || undefined
-        },
+        playerVars: playerVars,
         events: {
           'onReady': (event) => {
             if (activeAudioSide === side && !isVoting) {
